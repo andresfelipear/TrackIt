@@ -1,4 +1,4 @@
-package com.aarevalo.trackit.core.domain.timer
+package com.aarevalo.trackit.map.domain.timer
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

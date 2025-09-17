@@ -1,13 +1,14 @@
-package com.aarevalo.trackit.core.data
+package com.aarevalo.trackit.map.data
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
-import com.aarevalo.trackit.core.domain.location.Location
-import com.aarevalo.trackit.core.domain.location.LocationObserver
+import com.aarevalo.trackit.map.domain.location.Location
+import com.aarevalo.trackit.map.domain.location.LocationObserver
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -42,10 +43,10 @@ class AndroidLocationObserver @Inject constructor(
 
             if(ActivityCompat.checkSelfPermission(
                 context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 context,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED){
                 close()
             } else {

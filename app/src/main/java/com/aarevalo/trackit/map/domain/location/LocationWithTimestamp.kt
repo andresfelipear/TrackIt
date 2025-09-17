@@ -1,5 +1,6 @@
-package com.aarevalo.trackit.core.domain.location
+package com.aarevalo.trackit.map.domain.location
 
+import java.io.File
 import kotlin.time.Duration
 
 data class LocationWithTimestamp(

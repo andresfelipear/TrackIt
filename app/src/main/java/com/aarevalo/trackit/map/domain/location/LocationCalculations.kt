@@ -1,4 +1,4 @@
-package com.aarevalo.trackit.core.domain.location
+package com.aarevalo.trackit.map.domain.location
 
 class LocationCalculations {
 

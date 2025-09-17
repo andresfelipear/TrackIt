@@ -1,4 +1,4 @@
-package com.aarevalo.trackit.core.domain.location
+package com.aarevalo.trackit.map.domain.location
 
 import kotlinx.coroutines.flow.Flow
 
