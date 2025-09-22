@@ -1,6 +1,6 @@
 package com.aarevalo.trackit.map.domain.location
 
-class LocationCalculations {
+object LocationCalculations {
 
     fun getTotalDistanceMeters(locations:List<List<LocationWithTimestamp>>): Int{
         return locations

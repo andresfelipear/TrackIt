@@ -6,5 +6,5 @@ import kotlin.time.Duration
 data class LocationWithTimestamp(
     val location: Location,
     val timestamp: Duration,
-    val listPhotos: List<File>
+    val listPhotos: List<File>? = null
 )

@@ -3,11 +3,13 @@ package com.aarevalo.trackit.map.di
 import android.content.Context
 import com.aarevalo.trackit.map.data.AndroidLocationObserver
 import com.aarevalo.trackit.map.domain.location.LocationObserver
+import com.aarevalo.trackit.map.domain.location.LocationTracker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -21,5 +23,14 @@ class DataModule {
         context: Context
     ): LocationObserver {
         return AndroidLocationObserver(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationTracker(
+        locationObserver: LocationObserver,
+        applicationScope: CoroutineScope
+    ): LocationTracker{
+        return LocationTracker(locationObserver, applicationScope)
     }
 }

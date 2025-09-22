@@ -1,12 +1,24 @@
 package com.aarevalo.trackit.map.domain.location
 
+import com.aarevalo.trackit.map.domain.timer.Timer
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
+import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.zip
 import kotlin.time.Duration
 
-class LocationTracker @Inject constructor(
+@OptIn(ExperimentalCoroutinesApi::class)
+class LocationTracker (
     private val locationObserver: LocationObserver,
     private val applicationScope: CoroutineScope
 ) {
@@ -45,8 +57,85 @@ class LocationTracker @Inject constructor(
         _locationData.value = locationData
     }
 
-    fun updateElapsedTime(elapsedTime: Duration) {
-        _elapsedTime.value = elapsedTime
+    val currentLocation = isObservingLocation
+        .flatMapLatest { isObserving ->
+            if (isObserving) {
+                locationObserver.observeLocation(1000)
+            } else {
+                flowOf()
+            }
+        }.stateIn(
+            scope = applicationScope,
+            started = SharingStarted.Lazily,
+            initialValue = null
+        )
 
+    init {
+        _isTracking
+            .onEach { isTracking ->
+                if (!isTracking) {
+                    val newList = buildList {
+                        addAll(locationData.value.locations)
+                        add(emptyList())
+                    }.toList()
+                    _locationData.update {
+                        it.copy(locations = newList)
+                    }
+                }
+            }
+            .flatMapLatest { isTracking ->
+                if (isTracking) {
+                    Timer.timeAndEmits()
+                } else {
+                    flowOf()
+                }
+            }
+            .onEach { elapsedTime ->
+                _elapsedTime.value += elapsedTime
+            }
+            .launchIn(applicationScope)
+
+        locationData.launchIn(applicationScope)
+
+        currentLocation
+            .filterNotNull()
+            .combineTransform(_isTracking){ location, isTracking ->
+                if (isTracking) {
+                    emit(location)
+                }
+            }
+            .zip(_elapsedTime) { location, elapsedTime ->
+                LocationWithTimestamp(
+                    location = location,
+                    timestamp = elapsedTime,
+                )
+            }.onEach { location ->
+                val currentLocations = locationData.value.locations
+                val lastLocationsList = if(currentLocations.isNotEmpty()) {
+                    currentLocations.last() + location
+                } else {
+                    listOf(location)
+                }
+
+                val newLocationsList = currentLocations.replaceLast(lastLocationsList.distinct())
+
+                val distanceMeters = LocationCalculations.getTotalDistanceMeters(
+                    locations = newLocationsList
+                )
+
+                _locationData.update {
+                    LocationData(
+                        distanceMeters = distanceMeters,
+                        locations = newLocationsList,
+                    )
+                }
+            }.launchIn(applicationScope)
     }
+}
+
+private fun <T> List<List<T>>.replaceLast(replacement: List<T>): List<List<T>> {
+    if(this.isEmpty()) {
+        return listOf(replacement)
+    }
+    return this.dropLast(1) + listOf(replacement)
 }

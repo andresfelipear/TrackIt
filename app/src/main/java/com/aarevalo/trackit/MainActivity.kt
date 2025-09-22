@@ -12,46 +12,53 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.aarevalo.trackit.map.data.AndroidLocationObserver
-import com.aarevalo.trackit.map.domain.location.LocationObserver
-import com.aarevalo.trackit.map.domain.timer.Timer
-import com.aarevalo.trackit.map.presentation.mapSection.MapSection
+import com.aarevalo.trackit.map.domain.location.LocationTracker
+import com.aarevalo.trackit.map.presentation.maps.MapSection
 import com.aarevalo.trackit.ui.theme.TrackItTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import javax.inject.Inject
-import kotlin.time.Duration
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var locationObserver: LocationObserver
+    lateinit var locationTracker: LocationTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        locationObserver.observeLocation(1000).onEach {
-            Log.d("LOCATION", it.toString())
-        }.launchIn(lifecycleScope)
+        locationTracker.locationData.onEach {
+                Log.d(
+                    "LocationData",
+                    it.toString()
+                )
+            }
+            .launchIn(lifecycleScope)
+
+        lifecycleScope.launch {
+            kotlinx.coroutines.delay(2000)
+            locationTracker.startObservingLocation()
+            locationTracker.setIsTracking(true)
+            kotlinx.coroutines.delay(5000)
+            locationTracker.finishTracking()
+        }
 
         setContent {
             val navController = rememberNavController()
             TrackItTheme {
-                Box (
+                Box(
                     modifier = Modifier.fillMaxSize()
-                ){
+                ) {
                     NavHost(
                         navController = navController,
                         startDestination = MapScreenDes
-                    ){
-                        composable<MapScreenDes> (){
+                    ) {
+                        composable<MapScreenDes>() {
                             MapSection(
                                 modifier = Modifier.fillMaxSize()
                             )
