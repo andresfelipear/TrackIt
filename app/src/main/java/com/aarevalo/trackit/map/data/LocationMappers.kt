@@ -4,6 +4,6 @@ import android.location.Location
 
 fun Location.toLocation() = com.aarevalo.trackit.map.domain.location.Location(
     lat = latitude,
-    lon = longitude
+    long = longitude
 )
 

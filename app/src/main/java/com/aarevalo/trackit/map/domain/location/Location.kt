@@ -7,11 +7,11 @@ import kotlin.math.sqrt
 
 data class Location(
     val lat: Double,
-    val lon: Double
+    val long: Double
 ){
     fun distanceTo(other: Location): Float {
         val latDistance = Math.toRadians(other.lat - this.lat)
-        val lonDistance = Math.toRadians(other.lon - this.lon)
+        val lonDistance = Math.toRadians(other.long - this.long)
 
         val a = sin(latDistance / 2) * sin(latDistance / 2) +
                 cos(Math.toRadians(this.lat)) * cos(Math.toRadians(other.lat)) *

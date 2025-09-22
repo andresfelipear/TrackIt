@@ -10,15 +10,16 @@ import com.google.maps.android.compose.Polyline
 
 @Composable
 fun PolylinesSection(
-    location: List<List<LocationWithTimestamp>>
-){
+    locations: List<List<LocationWithTimestamp>>
+) {
 
-    val polylines = remember(location) {
-        location.map { list ->
-            list.zipWithNext { timestamp1, timestamp2 ->
+    val polylines = remember(locations) {
+        locations.map { location ->
+            location.zipWithNext { timestamp1, timestamp2 ->
                 PolylinesUi(
                     location1 = timestamp1.location,
                     location2 = timestamp2.location,
+                    color = Color.Blue
                 )
             }
         }
@@ -30,10 +31,14 @@ fun PolylinesSection(
                 points = listOf(
                     LatLng(
                         polylineUi.location1.lat,
-                        polylineUi.location1.lon
+                        polylineUi.location1.long
                     ),
+                    LatLng(
+                        polylineUi.location2.lat,
+                        polylineUi.location2.long
+                    )
                 ),
-                color = Color.Blue,
+                color = polylineUi.color,
                 jointType = JointType.BEVEL
             )
         }
