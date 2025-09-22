@@ -23,7 +23,7 @@ class TrackingMapViewModel @Inject constructor(
     private val hasLocationPermission = MutableStateFlow(true)
     private val shouldTrack = MutableStateFlow(false)
 
-    private val _state = MutableStateFlow(TrackingLocationState())
+    private val _state = MutableStateFlow(MapScreenState())
 
     private val isAllowedToTrack = combine(
         hasLocationPermission,
@@ -76,30 +76,30 @@ class TrackingMapViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    val state: StateFlow<TrackingLocationState> = _state.stateIn(
+    val state: StateFlow<MapScreenState> = _state.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = TrackingLocationState()
+            initialValue = MapScreenState()
         )
 
-    fun onAction(intent: TrackingIntent) {
+    fun onAction(intent: MapScreenAction) {
         viewModelScope.launch {
             when(intent) {
-                TrackingIntent.PauseTracking -> {
+                MapScreenAction.PauseTracking -> {
                     shouldTrack.value = false
                 }
 
-                TrackingIntent.ResumeTracking -> {
+                MapScreenAction.ResumeTracking -> {
                     shouldTrack.value = true
                     locationTracker.setIsTracking(true)
                 }
 
-                TrackingIntent.StartTracking -> {
+                MapScreenAction.StartTracking -> {
                     shouldTrack.value = true
                     locationTracker.setIsTracking(true)
                 }
 
-                is TrackingIntent.SubmitLocationPermissionInfo -> {
+                is MapScreenAction.SubmitLocationPermissionInfo -> {
                     hasLocationPermission.value = intent.acceptedLocationPermission
                     updateState { state ->
                         state.copy(
@@ -107,7 +107,7 @@ class TrackingMapViewModel @Inject constructor(
                         )
                     }
                 }
-                is TrackingIntent.SubmitNotificationPermissionInfo -> {
+                is MapScreenAction.SubmitNotificationPermissionInfo -> {
                     updateState { state ->
                         state.copy(
                             showNotificationRationale = intent.showNotificationRationale
@@ -118,7 +118,7 @@ class TrackingMapViewModel @Inject constructor(
         }
     }
 
-    private fun updateState(update: (TrackingLocationState) -> TrackingLocationState) {
+    private fun updateState(update: (MapScreenState) -> MapScreenState) {
         _state.update {
             update(it)
         }

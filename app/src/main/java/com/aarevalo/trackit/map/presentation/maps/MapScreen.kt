@@ -30,7 +30,6 @@ import com.aarevalo.trackit.core.presentation.utils.hasLocationPermission
 import com.aarevalo.trackit.core.presentation.utils.hasNotificationPermission
 import com.aarevalo.trackit.core.presentation.utils.shouldShowLocationRationalePermission
 import com.aarevalo.trackit.core.presentation.utils.shouldShowPostNotificationRationalePermission
-import kotlin.contracts.contract
 
 
 @Composable
@@ -48,8 +47,8 @@ fun MapScreenRoot(
 
 @Composable
 fun MapScreen(
-    onAction: (TrackingIntent) -> Unit,
-    state: TrackingLocationState,
+    onAction: (MapScreenAction) -> Unit,
+    state: MapScreenState,
 ){
     val context = LocalContext.current
     val activity = LocalActivity.current as ComponentActivity
@@ -65,14 +64,14 @@ fun MapScreen(
         val showNotificationRationale = activity.shouldShowPostNotificationRationalePermission()
 
         onAction(
-            TrackingIntent.SubmitLocationPermissionInfo(
+            MapScreenAction.SubmitLocationPermissionInfo(
                 acceptedLocationPermission = hasLocationPermission,
                 showLocationRationale = showLocationRationale
             )
         )
 
         onAction(
-            TrackingIntent.SubmitNotificationPermissionInfo(
+            MapScreenAction.SubmitNotificationPermissionInfo(
                 acceptedNotificationPermission = hasNotificationPermission,
                 showNotificationRationale = showNotificationRationale
             )
@@ -88,13 +87,13 @@ fun MapScreen(
         },
         onDismiss = {
             onAction(
-                TrackingIntent.SubmitLocationPermissionInfo(
+                MapScreenAction.SubmitLocationPermissionInfo(
                     acceptedLocationPermission = context.hasLocationPermission(),
                     showLocationRationale = false
                 )
             )
             onAction(
-                TrackingIntent.SubmitNotificationPermissionInfo(
+                MapScreenAction.SubmitNotificationPermissionInfo(
                     acceptedNotificationPermission = context.hasNotificationPermission(),
                     showNotificationRationale = false
                 )
@@ -107,14 +106,14 @@ fun MapScreen(
         val showNotificationRationale = activity.shouldShowPostNotificationRationalePermission()
 
         onAction(
-            TrackingIntent.SubmitLocationPermissionInfo(
+            MapScreenAction.SubmitLocationPermissionInfo(
                 acceptedLocationPermission = context.hasLocationPermission(),
                 showLocationRationale = showLocationRationale
             )
         )
 
         onAction(
-            TrackingIntent.SubmitNotificationPermissionInfo(
+            MapScreenAction.SubmitNotificationPermissionInfo(
                 acceptedNotificationPermission = context.hasNotificationPermission(),
                 showNotificationRationale = showNotificationRationale
             )
@@ -125,8 +124,8 @@ fun MapScreen(
         }
 
         if(context.hasLocationPermission()){
-            onAction(TrackingIntent.StartTracking)
-            onAction(TrackingIntent.ResumeTracking)
+            onAction(MapScreenAction.StartTracking)
+            onAction(MapScreenAction.ResumeTracking)
         }
     }
 
@@ -137,8 +136,8 @@ fun MapScreen(
             FloatingActionButton(
                 onClick = {
                     when{
-                        state.isPaused -> onAction(TrackingIntent.ResumeTracking)
-                        else -> onAction(TrackingIntent.PauseTracking)
+                        state.isPaused -> onAction(MapScreenAction.ResumeTracking)
+                        else -> onAction(MapScreenAction.PauseTracking)
                     }
                 }
             ){

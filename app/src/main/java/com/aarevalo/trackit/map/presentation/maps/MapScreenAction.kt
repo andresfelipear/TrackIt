@@ -1,19 +1,19 @@
 package com.aarevalo.trackit.map.presentation.maps
 
-sealed interface TrackingIntent {
+sealed interface MapScreenAction {
 
     data class SubmitLocationPermissionInfo(
         val acceptedLocationPermission: Boolean,
         val showLocationRationale: Boolean
-    ): TrackingIntent
+    ): MapScreenAction
 
     data class SubmitNotificationPermissionInfo(
         val acceptedNotificationPermission: Boolean,
         val showNotificationRationale: Boolean
-    ): TrackingIntent
+    ): MapScreenAction
 
 
-    data object StartTracking : TrackingIntent
-    data object PauseTracking : TrackingIntent
-    data object ResumeTracking : TrackingIntent
+    data object StartTracking : MapScreenAction
+    data object PauseTracking : MapScreenAction
+    data object ResumeTracking : MapScreenAction
 }
