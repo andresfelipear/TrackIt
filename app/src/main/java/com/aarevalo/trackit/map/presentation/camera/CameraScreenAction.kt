@@ -26,6 +26,4 @@ sealed interface CameraScreenAction {
 
     data object SavePicture : CameraScreenAction
     data object CancelPreview : CameraScreenAction
-
-
 }

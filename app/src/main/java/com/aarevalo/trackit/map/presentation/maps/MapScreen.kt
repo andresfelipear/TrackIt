@@ -34,10 +34,17 @@ import com.aarevalo.trackit.core.presentation.utils.shouldShowPostNotificationRa
 
 @Composable
 fun MapScreenRoot(
-    viewModel: TrackingMapViewModel,
+    viewModel: MapScreenViewModel,
     navigateToCameraScreen: () -> Unit
 ){
     val state by viewModel.state.collectAsState()
+    LaunchedEffect(key1 = true){
+        viewModel.event.collect{ event ->
+            when(event){
+                MapScreenEvents.NavigationCamera -> navigateToCameraScreen()
+            }
+        }
+    }
 
     MapScreen(
         onAction = viewModel::onAction,
@@ -168,7 +175,8 @@ fun MapScreen(
                 currentLocation = state.location,
                 isTrackingFinished = false,
                 locations = state.trackingLocations,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onAction = onAction
             )
         }
     }

@@ -4,24 +4,29 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aarevalo.trackit.map.domain.location.LocationTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TrackingMapViewModel @Inject constructor(
+class MapScreenViewModel @Inject constructor(
     private val locationTracker: LocationTracker
 ) : ViewModel() {
 
     private val hasLocationPermission = MutableStateFlow(true)
     private val shouldTrack = MutableStateFlow(false)
+
+    private val _event = Channel<MapScreenEvents>()
+    val event = _event.receiveAsFlow()
 
     private val _state = MutableStateFlow(MapScreenState())
 
@@ -113,6 +118,11 @@ class TrackingMapViewModel @Inject constructor(
                             showNotificationRationale = intent.showNotificationRationale
                         )
                     }
+                }
+
+                MapScreenAction.GoToCamera -> {
+                    shouldTrack.value = false
+                    _event.send(MapScreenEvents.NavigationCamera)
                 }
             }
         }

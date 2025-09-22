@@ -12,8 +12,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aarevalo.trackit.map.domain.location.LocationTracker
+import com.aarevalo.trackit.map.presentation.camera.CameraScreenRoot
+import com.aarevalo.trackit.map.presentation.camera.CameraScreenViewModel
 import com.aarevalo.trackit.map.presentation.maps.MapScreenRoot
-import com.aarevalo.trackit.map.presentation.maps.TrackingMapViewModel
+import com.aarevalo.trackit.map.presentation.maps.MapScreenViewModel
 import com.aarevalo.trackit.ui.theme.TrackItTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.Serializable
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         startDestination = MapScreenDes
                     ) {
                         composable<MapScreenDes>() {
-                            val viewModel = hiltViewModel<TrackingMapViewModel>()
+                            val viewModel = hiltViewModel<MapScreenViewModel>()
 
                             MapScreenRoot(
                                 viewModel = viewModel,
@@ -51,7 +53,10 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable<CameraScreenDes> {
-
+                            val viewModel = hiltViewModel<CameraScreenViewModel>()
+                            CameraScreenRoot(
+                                viewModel = viewModel
+                            )
                         }
                     }
                 }

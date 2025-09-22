@@ -16,4 +16,5 @@ sealed interface MapScreenAction {
     data object StartTracking : MapScreenAction
     data object PauseTracking : MapScreenAction
     data object ResumeTracking : MapScreenAction
+    data object GoToCamera: MapScreenAction
 }
