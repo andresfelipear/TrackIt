@@ -8,5 +8,7 @@ data class TrackingLocationState(
     val isPaused: Boolean = false,
     val location: Location? = null,
     val selectedLocation: LocationWithTimestamp? = null,
-    val trackingLocations: List<List<LocationWithTimestamp>> = emptyList()
+    val trackingLocations: List<List<LocationWithTimestamp>> = emptyList(),
+    val showLocationRationale: Boolean = false,
+    val showNotificationRationale: Boolean = false
 )
