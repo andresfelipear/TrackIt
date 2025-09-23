@@ -176,7 +176,8 @@ fun MapScreen(
                 isTrackingFinished = false,
                 locations = state.trackingLocations,
                 modifier = Modifier.fillMaxSize(),
-                onAction = onAction
+                onAction = onAction,
+                selectedLocation = state.selectedLocation
             )
         }
     }

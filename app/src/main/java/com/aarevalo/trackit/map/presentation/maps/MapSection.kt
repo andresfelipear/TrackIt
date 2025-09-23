@@ -36,7 +36,8 @@ fun MapSection(
     currentLocation: Location?,
     isTrackingFinished: Boolean,
     locations: List<List<LocationWithTimestamp>>,
-    onAction: (MapScreenAction) -> Unit
+    onAction: (MapScreenAction) -> Unit,
+    selectedLocation: LocationWithTimestamp?
 ) {
 
     val activity = LocalActivity.current as ComponentActivity
@@ -51,6 +52,16 @@ fun MapSection(
     }
 
     val marker = rememberUpdatedMarkerState(markerPosition)
+
+    selectedLocation?.let{
+        PhotoGalleryDialog(
+            locationWithPhotos = selectedLocation,
+            onDismiss = {
+                onAction(MapScreenAction.DismissDialogLocation)
+                onAction(MapScreenAction.ResumeTracking)
+            }
+        )
+    }
 
 
     LaunchedEffect(currentLocation, isTrackingFinished) {
@@ -94,6 +105,11 @@ fun MapSection(
         )
 
         MapEffect(){}
+
+        ClusterSection(
+            locations = locations,
+            onAction = onAction
+        )
 
         if(!isTrackingFinished && currentLocation != null){
             MarkerComposable(

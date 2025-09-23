@@ -76,7 +76,7 @@ class CameraScreenViewModel @Inject constructor(
         val latestLocation = lastNonEmptySegment.last()
 
         val updatedLocation = latestLocation.copy(
-            listPhotos = latestLocation.listPhotos?.plus(photoFile)
+            listPhotos = latestLocation.listPhotos.plus(photoFile)
         )
 
         val updatedSegment = lastNonEmptySegment.dropLast(1) + updatedLocation

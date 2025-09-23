@@ -124,6 +124,21 @@ class MapScreenViewModel @Inject constructor(
                     shouldTrack.value = false
                     _event.send(MapScreenEvents.NavigationCamera)
                 }
+
+                MapScreenAction.DismissDialogLocation -> {
+                    updateState {
+                        it.copy(
+                            selectedLocation = null
+                        )
+                    }
+                }
+                is MapScreenAction.SelectLocation -> {
+                    updateState {
+                        it.copy(
+                            selectedLocation = intent.location
+                        )
+                    }
+                }
             }
         }
     }
