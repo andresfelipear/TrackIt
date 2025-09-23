@@ -1,6 +1,7 @@
 package com.aarevalo.trackit.map.presentation.maps
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -25,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.aarevalo.trackit.TrackitService
 import com.aarevalo.trackit.core.presentation.dialogs.PermissionRationaleDialogs
 import com.aarevalo.trackit.core.presentation.utils.hasLocationPermission
 import com.aarevalo.trackit.core.presentation.utils.hasNotificationPermission
@@ -105,6 +107,16 @@ fun MapScreen(
                     showNotificationRationale = false
                 )
             )
+
+            if(context.hasLocationPermission()){
+                val intent = Intent(activity, TrackitService::class.java).apply {
+                    action = TrackitService.ACTION_START_SERVICE
+                }
+
+                if(!TrackitService.isServiceActive.value){
+                    activity.startService(intent)
+                }
+            }
         }
     )
 
@@ -131,8 +143,17 @@ fun MapScreen(
         }
 
         if(context.hasLocationPermission()){
-            onAction(MapScreenAction.StartTracking)
-            onAction(MapScreenAction.ResumeTracking)
+
+            val intent = Intent(activity, TrackitService::class.java).apply {
+                action = TrackitService.ACTION_START_SERVICE
+            }
+
+            if(!TrackitService.isServiceActive.value){
+                activity.startService(intent)
+            } else {
+                onAction(MapScreenAction.StartTracking)
+                onAction(MapScreenAction.ResumeTracking)
+            }
         }
     }
 
@@ -143,6 +164,17 @@ fun MapScreen(
             FloatingActionButton(
                 onClick = {
                     when{
+                        !state.isTracking -> {
+                            if(context.hasLocationPermission()){
+                                val intent = Intent(activity, TrackitService::class.java).apply {
+                                    action = TrackitService.ACTION_START_SERVICE
+                                }
+                                if(!TrackitService.isServiceActive.value){
+                                    activity.startService(intent)
+                                }
+                                onAction(MapScreenAction.StartTracking)
+                            }
+                        }
                         state.isPaused -> onAction(MapScreenAction.ResumeTracking)
                         else -> onAction(MapScreenAction.PauseTracking)
                     }
